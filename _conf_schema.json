@@ -1,0 +1,50 @@
+{
+  "enabled": {
+    "description": "是否启用定时暂停功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后暂停计划将不再生效，但保留配置"
+  },
+  "pause_start": {
+    "description": "暂停开始时间",
+    "type": "string",
+    "default": "23:00",
+    "hint": "格式为 HH:MM（24小时制），例如 23:00"
+  },
+  "pause_end": {
+    "description": "暂停结束时间",
+    "type": "string",
+    "default": "08:00",
+    "hint": "格式为 HH:MM（24小时制），支持跨天设置。例如 08:00 表示次日"
+  },
+  "pause_message": {
+    "description": "暂停期间的回复内容",
+    "type": "text",
+    "default": "⏰ 当前为休息时间，LLM 服务已暂停。\n服务恢复时间：{end_time}\n请稍后再试～",
+    "hint": "支持变量：{start_time} 暂停开始时间、{end_time} 暂停结束时间"
+  },
+  "admin_only": {
+    "description": "仅管理员可配置",
+    "type": "bool",
+    "default": true,
+    "hint": "开启后只有管理员可以使用暂停相关的指令"
+  },
+  "notify_on_pause": {
+    "description": "暂停时发送通知",
+    "type": "bool",
+    "default": false,
+    "hint": "开启后在进入/退出暂停时间段时向管理员发送通知"
+  },
+  "exclude_admin": {
+    "description": "管理员不受暂停限制",
+    "type": "bool",
+    "default": true,
+    "hint": "开启后管理员在暂停期间仍可使用 LLM 服务"
+  },
+  "timezone": {
+    "description": "时区设置",
+    "type": "string",
+    "default": "Asia/Shanghai",
+    "hint": "IANA 时区标识符，例如 Asia/Shanghai、America/New_York"
+  }
+}

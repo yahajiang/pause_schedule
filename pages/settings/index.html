@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>定时暂停服务 - 设置</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .card h3 {
+            font-size: 16px;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .status-bar.running {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+        }
+        .status-bar.paused {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: #e65100;
+        }
+        .status-bar .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-bar.running .dot {
+            background: #4caf50;
+            animation: pulse-green 2s infinite;
+        }
+        .status-bar.paused .dot {
+            background: #ff9800;
+            animation: pulse-orange 2s infinite;
+        }
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(76,175,80,0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(76,175,80,0); }
+        }
+        @keyframes pulse-orange {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,152,0,0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(255,152,0,0); }
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .form-group .hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="time"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            background: #fff;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        .time-range {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .time-range input {
+            flex: 1;
+        }
+        .time-range .separator {
+            font-size: 14px;
+            color: #999;
+            font-weight: 500;
+        }
+        .switch-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .switch-group:last-child {
+            border-bottom: none;
+        }
+        .switch-group .label-area {
+            flex: 1;
+        }
+        .switch-group .label-area .title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+        .switch-group .label-area .desc {
+            font-size: 12px;
+            color: #999;
+            margin-top: 2px;
+        }
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #ccc;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+        .switch .slider::before {
+            content: "";
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .switch input:checked + .slider {
+            background: #667eea;
+        }
+        .switch input:checked + .slider::before {
+            transform: translateX(20px);
+        }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        }
+        .btn-danger {
+            background: #ff5252;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #ff1744;
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .var-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .var-tag {
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #666;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 状态栏 -->
+        <div class="status-bar running" id="statusBar">
+            <span><span class="dot"></span><span id="statusText">▶️ 运行中</span></span>
+            <span id="currentTime">--:--:--</span>
+        </div>
+
+        <!-- 基本设置 -->
+        <div class="card">
+            <h3>⚙️ 基本设置</h3>
+
+            <div class="switch-group">
+                <div class="label-area">
+                    <div class="title">启用定时暂停</div>
+                    <div class="desc">关闭后暂停计划将不生效，但保留配置</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="enabled" checked />
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="form-group" style="margin-top: 16px;">
+                <label>暂停时段</label>
+                <div class="time-range">
+                    <input type="time" id="pauseStart" value="23:00" />
+                    <span class="separator">至</span>
+                    <input type="time" id="pauseEnd" value="08:00" />
+                </div>
+                <div class="hint">支持跨天设置，如 23:00 ~ 08:00 表示从晚上11点到次日早上8点</div>
+            </div>
+
+            <div class="form-group">
+                <label>时区</label>
+                <select id="timezone">
+                    <option value="Asia/Shanghai">Asia/Shanghai (UTC+8)</option>
+                    <option value="Asia/Tokyo">Asia/Tokyo (UTC+9)</option>
+                    <option value="America/New_York">America/New_York (UTC-5)</option>
+                    <option value="America/Los_Angeles">America/Los_Angeles (UTC-8)</option>
+                    <option value="Europe/London">Europe/London (UTC+0)</option>
+                    <option value="Europe/Berlin">Europe/Berlin (UTC+1)</option>
+                    <option value="UTC">UTC (UTC+0)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 回复设置 -->
+        <div class="card">
+            <h3>💬 回复设置</h3>
+            <div class="form-group">
+                <label>暂停期间回复内容</label>
+                <textarea id="pauseMessage" rows="4">⏰ 当前为休息时间，LLM 服务已暂停。
+服务恢复时间：{end_time}
+请稍后再试～</textarea>
+                <div class="var-tags">
+                    <span class="var-tag">{start_time}</span>
+                    <span class="var-tag">{end_time}</span>
+                </div>
+                <div class="hint">支持变量替换：{start_time} 暂停开始时间、{end_time} 暂停结束时间</div>
+            </div>
+        </div>
+
+        <!-- 权限设置 -->
+        <div class="card">
+            <h3>🔐 权限设置</h3>
+
+            <div class="switch-group">
+                <div class="label-area">
+                    <div class="title">仅管理员可配置</div>
+                    <div class="desc">开启后只有管理员可以使用暂停相关指令</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="adminOnly" checked />
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-group">
+                <div class="label-area">
+                    <div class="title">管理员免除暂停</div>
+                    <div class="desc">开启后管理员在暂停期间仍可使用 LLM 服务</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="excludeAdmin" checked />
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-group">
+                <div class="label-area">
+                    <div class="title">暂停时发送通知</div>
+                    <div class="desc">进入/退出暂停时段时向管理员发送通知</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifyOnPause" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="card">
+            <div class="btn-group">
+                <button class="btn btn-primary" id="saveBtn">💾 保存配置</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- 显式引入 bridge SDK，确保 window.AstrBotPluginPage 可用 -->
+    <script src="/api/plugin/page/bridge-sdk.js"></script>
+    <script type="module" src="./app.js"></script>
+</body>
+</html>
