@@ -2,7 +2,7 @@ name: astrbot_plugin_pause_schedule
 display_name: 定时暂停服务
 desc: 在指定时间段内定时暂停 LLM 服务，支持跨天时间设置、WebUI 配置界面和管理员权限控制。
 short_desc: 定时暂停 LLM 服务，支持跨天时间段配置
-version: 1.0.0
+version: 2.0.0
 author: AstrBot Plugin
 repo: https://github.com/user/astrbot_plugin_pause_schedule
 astrbot_version: ">=4.0.0"
